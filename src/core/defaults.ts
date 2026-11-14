@@ -19,6 +19,8 @@ export const DEFAULT_PARAMS: BootParams = {
   bottomChamfer: 0.6,
   topChamfer: 0.4,
   topOuterChamfer: 0,
+  baseFlare: 0,
+  reinforce: false,
   screwEnabled: false,
   screwPosition: 'bottom',
   screwHoleDiameter: 3,
@@ -37,6 +39,14 @@ export const LARGE_LIFT_WARNING = 30;
 export const SIDE_SCREW_MIN_MATERIAL = 1.2;
 /** Margin of the side-screw reinforcement pad around the head [mm]. */
 export const SIDE_BOSS_MARGIN = 2.5;
+/** Reinforcement pillars: void diameter, grid spacing, solid skin kept at bottom/top [mm]. */
+export const PILLAR_VOID_DIAMETER = 1;
+export const PILLAR_SPACING = 6;
+export const PILLAR_SKIN = 1.2;
+/** Minimal lift for pillars to fit (2 × skin + some height) [mm]. */
+export const PILLAR_MIN_LIFT = 4;
+/** Max number of pillars (CSG cost); spacing grows for big legs. */
+export const PILLAR_MAX_COUNT = 400;
 
 export const MATERIALS = {
   PLA: 1.24,

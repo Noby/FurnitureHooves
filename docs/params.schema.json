@@ -99,6 +99,18 @@
           "description": "Chamfer of the outer top edge of the sleeve [mm]",
           "default": 0
         },
+        "baseFlare": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30,
+          "description": "Wider base: footprint grows by this much per side, tapering into the wall at 45° below the cavity floor [mm]",
+          "default": 0
+        },
+        "reinforce": {
+          "type": "boolean",
+          "description": "Reinforcement pillars: hidden Ø1 mm vertical voids in the floor under the leg – the slicer prints perimeters around them, forming solid load-bearing columns",
+          "default": false
+        },
         "screwEnabled": {
           "type": "boolean",
           "description": "Hole for a small wood screw holding the boot on the leg",
@@ -158,6 +170,8 @@
         "bottomChamfer",
         "topChamfer",
         "topOuterChamfer",
+        "baseFlare",
+        "reinforce",
         "screwEnabled",
         "screwPosition",
         "screwHoleDiameter",

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { meshTo3mf } from '../core/export/3mf';
+import { meshTo3mf, type SlicerSettings } from '../core/export/3mf';
 import { meshToStl } from '../core/export/stl';
 import type { BootMesh } from '../core/generateBoot';
 import { arrangeCopies } from '../core/layout';
@@ -15,6 +15,8 @@ interface Props {
   valid: boolean;
   count: number;
   onCount: (n: number) => void;
+  /** recommended slicer settings embedded in the 3MF */
+  slicer?: SlicerSettings;
 }
 
 function download(data: BlobPart, fileName: string, type: string) {
@@ -57,7 +59,7 @@ const DownloadIcon = () => (
   </svg>
 );
 
-export function ExportBar({ mesh, meshParams, params, valid, count, onCount }: Props) {
+export function ExportBar({ mesh, meshParams, params, valid, count, onCount, slicer }: Props) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   useEffect(() => {
@@ -136,7 +138,7 @@ export function ExportBar({ mesh, meshParams, params, valid, count, onCount }: P
           title={disabledTitle}
           onClick={() => {
             const m = exportMesh();
-            if (m) download(meshTo3mf(m, base), `${base}.3mf`, 'model/3mf');
+            if (m) download(meshTo3mf(m, base, slicer), `${base}.3mf`, 'model/3mf');
           }}
         >
           <DownloadIcon />

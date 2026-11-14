@@ -22,6 +22,8 @@ export const URL_KEYS: Record<ParamKey, string> = {
   bottomChamfer: 'bc',
   topChamfer: 'tc',
   topOuterChamfer: 'toc',
+  baseFlare: 'flare',
+  reinforce: 'rib',
   screwEnabled: 'screw',
   screwPosition: 'pos',
   screwHoleDiameter: 'sd',

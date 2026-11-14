@@ -12,6 +12,8 @@ interface Props {
   error: string | null;
   invalid: boolean;
   fileName: string;
+  /** print tip (falls back to the generic one) */
+  tip?: string;
   dark: boolean;
 }
 
@@ -50,7 +52,7 @@ function Toggle({
   );
 }
 
-export function Viewer({ mesh, meshParams, busy, error, invalid, fileName, dark }: Props) {
+export function Viewer({ mesh, meshParams, busy, error, invalid, fileName, dark, tip }: Props) {
   const { t } = useI18n();
   const [showGhost, setShowGhost] = useState(true);
   const [section, setSection] = useState(false);
@@ -156,7 +158,7 @@ export function Viewer({ mesh, meshParams, busy, error, invalid, fileName, dark 
         )}
         <p className="pointer-events-none absolute bottom-3 left-3 right-3 text-[12px] leading-snug text-muted">
           <span className="label-caps mr-2 text-accent-text">Tip</span>
-          {t('viewer.tip')}
+          {tip ?? t('viewer.tip')}
         </p>
       </div>
     </section>

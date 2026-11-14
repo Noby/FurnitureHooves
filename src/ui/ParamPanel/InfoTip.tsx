@@ -1,9 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import type { ParamKey } from '../../core/params';
 import { ParamDiagram } from './ParamDiagram';
 
 interface Props {
-  k: ParamKey;
+  k: string;
   label: string;
   text: string;
 }

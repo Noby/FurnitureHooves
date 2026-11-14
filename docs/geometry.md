@@ -74,6 +74,34 @@ protíná se skutečnou (šikmou) stěnou.
 Validace: `screwSideHeight ≥ r + 1` a `screwSideHeight + rHlavy ≤ sleeveHeight − topChamfer − 0,5`;
 hlava ≤ vnitřní hloubka − 2 mm. Pravidlo „zahloubení ≤ lift − 1“ platí jen pro spodní šroub.
 
+## Rozšířená základna (`baseFlare`)
+
+Spodek se rozšíří o `baseFlare` na každou stranu a pod 45° se vrátí ke stěně tak, aby
+zkosení skončilo přesně ve výšce dna dutiny (Z = `lift`). Fusion: **Sketch** vnějšího
+profilu odsazeného o `baseFlare` → **Extrude – Join** do výšky `lift − baseFlare`,
+pak **Loft – Join** k vnějšímu profilu v Z = `lift` (45°). Spodní sražení
+`bottomChamfer` se aplikuje na rozšířenou hranu. Platí `baseFlare ≤ lift − bottomChamfer − 0,5`.
+
+## Výztužné sloupky (`reinforce`)
+
+Ve dně pod nohou je mřížka uzavřených svislých dutinek Ø 1 mm (rozteč 6 mm, okraj 2,5 mm
+od stěny dutiny, max. 400 ks – pro velké nohy se rozteč zvětší). Dutinky začínají 1,2 mm
+nad podložkou a končí 1,2 mm pod dnem dutiny, takže nejsou zvenku vidět. Kolem spodního
+vrutu se vynechají (poloměr hlavy + 1,5 mm). Slicer kolem každé dutinky vytiskne perimetry
+→ vzniknou plné sloupky nesoucí zatížení v ose Z nezávisle na výplni.
+Fusion: **Sketch** bodů mřížky na rovině Z = 1,2 → **Extrude – Cut** kružnic Ø 1 mm do
+výšky `lift − 2,4` jako nové těleso a **Combine – Cut** (uzavřené dutiny).
+Vyžaduje `lift ≥ 4`.
+
+## Poradce zatížení (není geometrie)
+
+`src/core/load.ts`: síla na nohu = hmotnost / počet nohou · g · 2 (rezerva); tlak pod
+nohou = síla / plocha nohy. Podle tlaku se volí stupeň (lehké < 0,25 MPa, střední < 0,6,
+vysoké < 1,5, extrémní) s doporučenou výplní, perimetry, plnými vrstvami a materiálem.
+Doporučené hodnoty se ukládají do 3MF jako per-object nastavení PrusaSliceru
+(`Metadata/Slic3r_PE_model.config`: `fill_density`, `perimeters`,
+`top_solid_layers`, `bottom_solid_layers`).
+
 ## Implementace na webu (manifold-3d)
 
 Profily jsou konvexní, proto web skládá tělesa jako konvexní obal (hull) vrstvených

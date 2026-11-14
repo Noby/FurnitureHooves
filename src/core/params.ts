@@ -28,6 +28,7 @@ export const RANGES = {
   bottomChamfer: { min: 0, max: 3, step: 0.1 },
   topChamfer: { min: 0, max: 2, step: 0.1 },
   topOuterChamfer: { min: 0, max: 3, step: 0.1 },
+  baseFlare: { min: 0, max: 30, step: 0.5 },
   screwHoleDiameter: { min: 1, max: 12, step: 0.1 },
   screwHeadDiameter: { min: 2, max: 25, step: 0.1 },
   screwSideHeight: { min: 1, max: 150, step: 0.5 },
@@ -55,6 +56,14 @@ export const bootParamsSchema = z.object({
   topOuterChamfer: num('topOuterChamfer').describe(
     'Chamfer of the outer top edge of the sleeve [mm]',
   ),
+  baseFlare: num('baseFlare').describe(
+    'Wider base: footprint grows by this much per side, tapering into the wall at 45° below the cavity floor [mm]',
+  ),
+  reinforce: z
+    .boolean()
+    .describe(
+      'Reinforcement pillars: hidden Ø1 mm vertical voids in the floor under the leg – the slicer prints perimeters around them, forming solid load-bearing columns',
+    ),
   screwEnabled: z.boolean().describe('Hole for a small wood screw holding the boot on the leg'),
   screwPosition: z
     .enum(SCREW_POSITIONS)

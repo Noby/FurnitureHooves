@@ -48,6 +48,11 @@ docs/          params.schema.json, geometry.md (postup pro Autodesk Fusion)
 - zúžené nohy: kužel (kulatá) nebo komolý jehlan (hranatá), úhel 0–10°
 - tolerance, zvýšení, stěna, výška objímky, sražení spodní hrany, náběh horní hrany
 - volitelný otvor pro malý vrut (výchozí vypnutý) zespodu nebo zboku, se zahloubením pro zápustnou hlavu 90°; u bočního vrutu na slabé stěně se přidá nákružek kolem otvoru, zespodu zkosený 45° (bez podpor)
+- karta **Zatížení a tisk**: z hmotnosti nábytku, počtu nohou a výšky spočítá tlak a
+  doporučí výplň / perimetry / materiál (uloží se i do 3MF pro PrusaSlicer), upozorní
+  na stabilitu vysokého nábytku
+- **výztužné sloupky** (skryté dutinky ve dně → plné sloupky při běžné výplni) a
+  **rozšířená základna** (45°, bez podpor) pro velkou zátěž a vysoké dno
 - validace (červené chyby, žlutá varování), model se při chybě nepřegeneruje
 - 3D náhled: duch nohy, řez, kóty, vycentrování; světlý i tmavý motiv
 - objem a hmotnost (PLA / PETG), 1–8 kusů na podložce, STL / 3MF / JSON parametrů
@@ -62,5 +67,5 @@ Díky `base: './'` funguje build i na Vercelu / Netlify bez úprav.
 
 ## Fáze 2 (zatím neimplementováno)
 
-Kapsa na plst, odlehčení dna, zkosený náběh pro vysavač,
+Kapsa na plst, zkosený náběh pro vysavač,
 Fusion add-in nad `docs/params.schema.json`.

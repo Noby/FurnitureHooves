@@ -1,10 +1,8 @@
-import type { ParamKey } from '../../core/params';
-
 /**
  * Small schematic explaining what a parameter means.
  * Section view (side cut) for boot params, plan view (top) for leg/corner params.
  */
-const PLAN_KEYS: ParamKey[] = ['legDepth', 'legCornerRadius', 'outerCornerRadius'];
+const PLAN_KEYS: string[] = ['legDepth', 'legCornerRadius', 'outerCornerRadius'];
 
 const HL = 'var(--accent)';
 const BODY = 'var(--accent-soft)';
@@ -37,7 +35,7 @@ function Defs() {
   );
 }
 
-function SectionView({ k }: { k: ParamKey }) {
+function SectionView({ k }: { k: string }) {
   const side = k === 'screwSideHeight';
   const screwKey = k.startsWith('screw') && !side;
   return (
@@ -113,7 +111,7 @@ function SectionView({ k }: { k: ParamKey }) {
   );
 }
 
-function PlanView({ k }: { k: ParamKey }) {
+function PlanView({ k }: { k: string }) {
   return (
     <>
       <rect
@@ -147,7 +145,7 @@ function PlanView({ k }: { k: ParamKey }) {
   );
 }
 
-export function ParamDiagram({ k }: { k: ParamKey }) {
+export function ParamDiagram({ k }: { k: string }) {
   return (
     <svg viewBox="0 0 120 80" width={168} height={112} aria-hidden="true" className="block">
       <Defs />

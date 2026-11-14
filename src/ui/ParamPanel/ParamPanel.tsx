@@ -20,6 +20,8 @@ interface Props {
   validation: ValidationResult;
   squareLock: boolean;
   onSquareLock: (v: boolean) => void;
+  /** extra cards rendered before the "Advanced" section */
+  beforeAdvanced?: ReactNode;
 }
 
 function Card({
@@ -133,7 +135,14 @@ function SegButton({
   );
 }
 
-export function ParamPanel({ params, onChange, validation, squareLock, onSquareLock }: Props) {
+export function ParamPanel({
+  params,
+  onChange,
+  validation,
+  squareLock,
+  onSquareLock,
+  beforeAdvanced,
+}: Props) {
   const { t } = useI18n();
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
@@ -367,6 +376,8 @@ export function ParamPanel({ params, onChange, validation, squareLock, onSquareL
           <p className="pb-2 text-[13px] text-muted">{t('help.screwEnabled')}</p>
         )}
       </Card>
+
+      {beforeAdvanced}
 
       <section className="card px-4 py-1">
         <button

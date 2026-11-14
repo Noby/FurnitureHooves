@@ -39,14 +39,49 @@ export function modelXml(mesh: MeshData, name: string): string {
   return parts.join('\n');
 }
 
-/** 3MF package (zip) with a single mesh object, units in mm. */
-export function meshTo3mf(mesh: MeshData, name = 'boot'): Uint8Array {
-  return zipSync(
-    {
-      '[Content_Types].xml': strToU8(CONTENT_TYPES),
-      _rels: { '.rels': strToU8(RELS) },
-      '3D': { '3dmodel.model': strToU8(modelXml(mesh, name)) },
-    },
-    { level: 6 },
-  );
+/** Slicer settings stored in the 3MF (applied per object by PrusaSlicer). */
+export interface SlicerSettings {
+  /** infill [%] */
+  infill: number;
+  perimeters: number;
+  solidLayers: number;
+}
+
+/**
+ * PrusaSlicer per-object configuration (Metadata/Slic3r_PE_model.config).
+ * Object-level metadata entries override the print profile for that object.
+ */
+export function prusaObjectConfig(name: string, triangles: number, s: SlicerSettings): string {
+  const meta = (key: string, value: string | number) =>
+    `    <metadata type="object" key="${key}" value="${escapeXml(String(value))}"/>`;
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<config>',
+    ' <object id="1" instances_count="1">',
+    meta('name', name),
+    meta('fill_density', `${Math.round(s.infill)}%`),
+    meta('perimeters', Math.round(s.perimeters)),
+    meta('top_solid_layers', Math.round(s.solidLayers)),
+    meta('bottom_solid_layers', Math.round(s.solidLayers)),
+    `  <volume firstid="0" lastid="${Math.max(0, triangles - 1)}">`,
+    `   <metadata type="volume" key="name" value="${escapeXml(name)}"/>`,
+    '  </volume>',
+    ' </object>',
+    '</config>',
+  ].join('\n');
+}
+
+/** 3MF package (zip) with a single mesh object, units in mm (+ optional slicer settings). */
+export function meshTo3mf(mesh: MeshData, name = 'boot', settings?: SlicerSettings): Uint8Array {
+  const files: Record<string, Uint8Array | Record<string, Uint8Array>> = {
+    '[Content_Types].xml': strToU8(CONTENT_TYPES),
+    _rels: { '.rels': strToU8(RELS) },
+    '3D': { '3dmodel.model': strToU8(modelXml(mesh, name)) },
+  };
+  if (settings) {
+    files.Metadata = {
+      'Slic3r_PE_model.config': strToU8(prusaObjectConfig(name, mesh.indices.length / 3, settings)),
+    };
+  }
+  return zipSync(files, { level: 6 });
 }

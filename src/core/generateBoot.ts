@@ -1,4 +1,11 @@
 import type { Manifold, ManifoldToplevel } from 'manifold-3d';
+import {
+  PILLAR_MAX_COUNT,
+  PILLAR_MIN_LIFT,
+  PILLAR_SKIN,
+  PILLAR_SPACING,
+  PILLAR_VOID_DIAMETER,
+} from './defaults';
 import { getManifold } from './manifold';
 import type { BootParams } from './params';
 import {
@@ -85,6 +92,75 @@ function buildBody(m: ManifoldToplevel, params: BootParams): Manifold {
   base.delete();
   sleeve.delete();
   return body;
+}
+
+/**
+ * Wider base (null when baseFlare = 0): footprint grown by baseFlare per side,
+ * tapering back into the wall at 45° so that it ends exactly at the cavity floor.
+ * Widening downwards never overhangs → prints without supports.
+ */
+function buildBase(m: ManifoldToplevel, params: BootParams): Manifold | null {
+  const f = params.baseFlare;
+  if (f <= 0) return null;
+  const outer = outerProfile(params);
+  const wide = growProfile(outer, f);
+  const c = Math.min(params.bottomChamfer, params.lift - f - 0.01);
+  const pts: Vec3[] = [];
+  if (c > 0.001) pts.push(...ring(offsetProfile(wide, -c), 0), ...ring(wide, c));
+  else pts.push(...ring(wide, 0));
+  pts.push(...ring(wide, params.lift - f), ...ring(outer, params.lift));
+  return m.Manifold.hull(pts);
+}
+
+/** Grid of pillar positions under the leg (bottom screw area excluded). */
+export function pillarPositions(params: BootParams): [number, number][] {
+  if (!params.reinforce || params.lift < PILLAR_MIN_LIFT) return [];
+  const inner = innerProfile(params);
+  const margin = 2.5;
+  const hx = (inner.kind === 'circle' ? inner.diameter : inner.width) / 2 - margin;
+  const hy = (inner.kind === 'circle' ? inner.diameter : inner.depth) / 2 - margin;
+  if (hx <= 0 || hy <= 0) return [];
+  const inside = (x: number, y: number) =>
+    inner.kind === 'circle' ? Math.hypot(x, y) <= hx : Math.abs(x) <= hx && Math.abs(y) <= hy;
+  const screwKeepOut =
+    params.screwEnabled && params.screwPosition === 'bottom'
+      ? Math.max(params.screwHeadDiameter, params.screwHoleDiameter) / 2 + 1.5
+      : 0;
+  let spacing = PILLAR_SPACING;
+  const estimate = ((2 * hx) / spacing + 1) * ((2 * hy) / spacing + 1);
+  if (estimate > PILLAR_MAX_COUNT) spacing *= Math.sqrt(estimate / PILLAR_MAX_COUNT);
+  // grid symmetric around the centre (a row always lies on y = 0 → visible in the section view)
+  const nx = Math.floor(hx / spacing);
+  const ny = Math.floor(hy / spacing);
+  const pts: [number, number][] = [];
+  for (let i = -nx; i <= nx; i++) {
+    for (let j = -ny; j <= ny; j++) {
+      const x = i * spacing;
+      const y = j * spacing;
+      if (!inside(x, y)) continue;
+      if (screwKeepOut > 0 && Math.hypot(x, y) < screwKeepOut) continue;
+      pts.push([x, y]);
+    }
+  }
+  return pts;
+}
+
+/**
+ * Reinforcement pillars: closed vertical voids Ø1 mm inside the floor. The slicer
+ * wraps each void with perimeters → solid columns carrying the load along Z,
+ * independent of the infill. Invisible from outside (solid skin top and bottom).
+ */
+function buildPillarVoids(m: ManifoldToplevel, params: BootParams): Manifold | null {
+  const pos = pillarPositions(params);
+  if (pos.length === 0) return null;
+  const r = PILLAR_VOID_DIAMETER / 2;
+  const h = params.lift - 2 * PILLAR_SKIN;
+  const proto = m.Manifold.cylinder(h, r, r, 8);
+  const voids = pos.map(([x, y]) => proto.translate([x, y, PILLAR_SKIN]));
+  proto.delete();
+  const all = m.Manifold.compose(voids); // disjoint → cheap
+  voids.forEach((v) => v.delete());
+  return all;
 }
 
 /** Cavity for the leg (+ separate lead-in chamfer tool). Extends EPS above the top. */
@@ -233,16 +309,17 @@ export function buildBootManifold(
   m: ManifoldToplevel = getManifold(),
 ): Manifold {
   let body = buildBody(m, params);
-  const boss = buildSideBoss(m, params);
-  if (boss) {
-    const merged = m.Manifold.union(body, boss);
+  for (const extra of [buildSideBoss(m, params), buildBase(m, params)]) {
+    if (!extra) continue;
+    const merged = m.Manifold.union(body, extra);
     body.delete();
-    boss.delete();
+    extra.delete();
     body = merged;
   }
   const cavity = buildCavity(m, params);
   const screw = buildScrew(m, params);
-  const tools = screw ? [...cavity, screw] : cavity;
+  const pillars = buildPillarVoids(m, params);
+  const tools = [...cavity, ...(screw ? [screw] : []), ...(pillars ? [pillars] : [])];
   const result = m.Manifold.difference([body, ...tools]);
   body.delete();
   tools.forEach((t) => t.delete());

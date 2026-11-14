@@ -22,7 +22,13 @@ export function StatsStrip({ params, mesh, material, onMaterial }: Props) {
     {
       label: t('stats.outer'),
       value: size(d.outer),
-      sub: d.tapered ? `mm · ${t('stats.top')} ${size(d.outerTop)}` : 'mm',
+      sub: [
+        'mm',
+        d.tapered ? `${t('stats.top')} ${size(d.outerTop)}` : '',
+        params.baseFlare > 0 ? `${t('stats.base')} ${size(d.base)}` : '',
+      ]
+        .filter(Boolean)
+        .join(' · '),
     },
     {
       label: t('stats.inner'),

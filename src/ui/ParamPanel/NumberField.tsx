@@ -1,11 +1,12 @@
 import { useId, useState } from 'react';
+import { LOAD_RANGES, type LoadKey } from '../../core/load';
 import { RANGES, type NumericKey } from '../../core/params';
 import type { Issue } from '../../core/validate';
 import { useI18n } from '../../i18n';
 import { InfoTip } from './InfoTip';
 
 interface Props {
-  k: NumericKey;
+  k: NumericKey | LoadKey;
   value: number;
   onChange: (v: number) => void;
   /** i18n key override for label/help (e.g. legDiameter) */
@@ -38,7 +39,7 @@ export function NumberField({
   const id = useId();
   const msgId = `${id}-msg`;
   const [text, setText] = useState<string | null>(null);
-  const range = RANGES[k];
+  const range = k in RANGES ? RANGES[k as NumericKey] : LOAD_RANGES[k as LoadKey];
   const name = labelKey ?? k;
   const label = t(`field.${name}`);
   const display = text ?? (Number.isFinite(value) ? fmt(value, 2) : '');

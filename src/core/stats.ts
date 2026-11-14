@@ -9,6 +9,8 @@ export interface BootDimensions {
   innerTop: { x: number; y: number };
   outerTop: { x: number; y: number };
   tapered: boolean;
+  /** footprint on the floor incl. base flare */
+  base: { x: number; y: number };
   totalHeight: number;
   lift: number;
   round: boolean;
@@ -22,6 +24,7 @@ export function bootDimensions(p: BootParams): BootDimensions {
     innerTop: profileSize(growProfile(innerProfile(p), taperOffset(p, p.lift + p.sleeveHeight))),
     outerTop: profileSize(growProfile(outerProfile(p), taperOffset(p, p.lift + p.sleeveHeight))),
     tapered: p.legTaper > 0,
+    base: profileSize(growProfile(outerProfile(p), p.baseFlare)),
     totalHeight: p.lift + p.sleeveHeight,
     lift: p.lift,
     round: p.legShape === 'round',

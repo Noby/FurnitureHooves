@@ -1,4 +1,4 @@
-import { LARGE_LIFT_WARNING, MIN_WALL, THIN_WALL_WARNING } from './defaults';
+import { LARGE_LIFT_WARNING, MIN_WALL, PILLAR_MIN_LIFT, THIN_WALL_WARNING } from './defaults';
 import { bootParamsSchema, type BootParams, type ParamKey } from './params';
 import { innerProfile, minCornerWall, outerProfile, profileSize } from './profile';
 import { screwOuterRadius, screwRecessDepth, sideScrewLayout } from './screw';
@@ -144,6 +144,15 @@ export function validateParams(params: BootParams): ValidationResult {
         });
       }
     }
+  }
+
+  // wider base must end (45°) below the cavity floor
+  const maxFlare = r2(Math.max(0, p.lift - p.bottomChamfer - 0.5));
+  if (p.baseFlare > maxFlare) {
+    errors.push({ key: 'baseFlare', code: 'err.flareLift', vars: { max: maxFlare } });
+  }
+  if (p.reinforce && p.lift < PILLAR_MIN_LIFT) {
+    warnings.push({ key: 'reinforce', code: 'warn.pillarsLift', vars: { min: PILLAR_MIN_LIFT } });
   }
 
   // soft warnings
