@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+*.local
+.idea/workspace.xml
+Claude Setup.exe
+test-results
+playwright-report

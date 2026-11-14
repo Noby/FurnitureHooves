@@ -1,0 +1,172 @@
+{
+  "title": "Furniture Hooves – boot parameters",
+  "description": "All dimensions in millimetres. Derived rules (corner wall, screw fit, recess depth) are implemented in src/core/validate.ts.",
+  "$ref": "#/definitions/BootParams",
+  "definitions": {
+    "BootParams": {
+      "type": "object",
+      "properties": {
+        "legShape": {
+          "type": "string",
+          "enum": [
+            "rectangle",
+            "round"
+          ],
+          "description": "Leg cross-section: rectangle/square or round",
+          "default": "rectangle"
+        },
+        "legWidth": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 200,
+          "description": "Leg width (diameter for round legs) [mm]",
+          "default": 50
+        },
+        "legDepth": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 200,
+          "description": "Leg depth, rectangle only [mm]",
+          "default": 50
+        },
+        "legCornerRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Corner radius of the leg [mm]",
+          "default": 0
+        },
+        "legTaper": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Leg taper per side in degrees (0 = straight; round → cone, rectangle → truncated pyramid). Leg size is measured at its bottom, it widens upwards.",
+          "default": 0
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 6,
+          "description": "Total clearance: inner size = leg + tolerance [mm]",
+          "default": 1
+        },
+        "lift": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Floor thickness = how much the furniture is raised [mm]",
+          "default": 8
+        },
+        "wallThickness": {
+          "type": "number",
+          "minimum": 0.8,
+          "maximum": 10,
+          "description": "Sleeve wall thickness [mm]",
+          "default": 3
+        },
+        "sleeveHeight": {
+          "type": "number",
+          "minimum": 3,
+          "maximum": 150,
+          "description": "Height of the sleeve around the leg [mm]",
+          "default": 20
+        },
+        "outerCornerRadius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Outer vertical edge radius [mm]",
+          "default": 1
+        },
+        "bottomChamfer": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3,
+          "description": "Chamfer of the outer bottom edge [mm]",
+          "default": 0.6
+        },
+        "topChamfer": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "Inner lead-in chamfer at the top of the sleeve [mm]",
+          "default": 0.4
+        },
+        "topOuterChamfer": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3,
+          "description": "Chamfer of the outer top edge of the sleeve [mm]",
+          "default": 0
+        },
+        "screwEnabled": {
+          "type": "boolean",
+          "description": "Hole for a small wood screw holding the boot on the leg",
+          "default": false
+        },
+        "screwPosition": {
+          "type": "string",
+          "enum": [
+            "bottom",
+            "side"
+          ],
+          "description": "bottom = vertical hole in the floor centre, side = horizontal hole through the -X wall",
+          "default": "bottom"
+        },
+        "screwHoleDiameter": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 12,
+          "description": "Wood screw (hole) diameter [mm]",
+          "default": 3
+        },
+        "screwHead": {
+          "type": "string",
+          "enum": [
+            "none",
+            "countersunk"
+          ],
+          "description": "countersunk = 90° cone for a wood screw head on the outer side",
+          "default": "countersunk"
+        },
+        "screwHeadDiameter": {
+          "type": "number",
+          "minimum": 2,
+          "maximum": 25,
+          "description": "Wood screw head diameter [mm]",
+          "default": 6
+        },
+        "screwSideHeight": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 150,
+          "description": "Side screw only: height of the hole axis above the cavity floor [mm]",
+          "default": 10
+        }
+      },
+      "required": [
+        "legShape",
+        "legWidth",
+        "legDepth",
+        "legCornerRadius",
+        "legTaper",
+        "tolerance",
+        "lift",
+        "wallThickness",
+        "sleeveHeight",
+        "outerCornerRadius",
+        "bottomChamfer",
+        "topChamfer",
+        "topOuterChamfer",
+        "screwEnabled",
+        "screwPosition",
+        "screwHoleDiameter",
+        "screwHead",
+        "screwHeadDiameter",
+        "screwSideHeight"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
